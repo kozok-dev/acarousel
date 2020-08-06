@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+body {
+	color: #000;
+	background-color: #fff6f6;
+}
+h1 {
+	color: #800;
+}
+a {
+	color: #33f;
+}
+a:hover {
+	color: #383;
+}
+
+#header_sub {
+	border-bottom: 1px solid #a55;
+}
+#header_button_sub div a {
+	background-color: #a55;
+	border: 1px solid #a55;
+}
+
+.property .name {
+	color: #522;
+}
+
+#footer_sub {
+	background-color: #fff6f6;
+	border-top: 1px solid #a55;
+}

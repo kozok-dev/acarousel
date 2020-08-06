@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width">
+<meta charset="utf-8">
+<title>acarousel - 動作例</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style2.css">
+<style>
+#carousel_container {
+	width: 95%;
+	height: 300px;
+	border: 1px solid #a55;
+	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.5);
+}
+#carousel {
+	width: 600px;
+	height: 300px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	list-style-type: none;
+}
+#carousel li {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #a55;
+	float: left;
+}
+#carousel li img {
+	width: 100%;
+	height: 100%;
+}
+
+#c1 {
+	width: 200px;
+	height: 150px;
+	left: 200px;
+	top: 130px;
+	z-index: 5;
+}
+#c2 {
+	width: 150px;
+	height: 113px;
+	left: 350px;
+	top: 100px;
+	z-index: 4;
+}
+#c3 {
+	width: 100px;
+	height: 75px;
+	left: 450px;
+	top: 50px;
+	z-index: 3;
+}
+#c4 {
+	width: 80px;
+	height: 60px;
+	left: 400px;
+	top: 20px;
+	z-index: 2;
+}
+#c5 {
+	width: 70px;
+	height: 53px;
+	left: 320px;
+	top: 10px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	z-index: 1;
+}
+#c6 {
+	width: 70px;
+	height: 53px;
+	left: 210px;
+	top: 10px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	z-index: 1;
+}
+#c7 {
+	width: 80px;
+	height: 60px;
+	left: 120px;
+	top: 20px;
+	z-index: 2;
+}
+#c8 {
+	width: 100px;
+	height: 75px;
+	left: 50px;
+	top: 50px;
+	z-index: 3;
+}
+#c9 {
+	width: 150px;
+	height: 113px;
+	left: 100px;
+	top: 100px;
+	z-index: 4;
+}
+
+#move_mark {
+	width: 95%;
+	max-width: 500px;
+	margin: 0 auto;
+	position: relative;
+	bottom: 0;
+}
+#move_mark a {
+	color: #666;
+	font-size: 20px;
+	font-weight: bold;
+	text-decoration: none;
+}
+#move_mark a.active, #move_mark a:hover {
+	color: #333;
+}
+#move_back {
+	margin: 0 10px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+#move_next {
+	margin: 0 10px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="jquery.acarousel.min.js"></script>
+<script>
+$(function () {
+	var acarousel = $("#carousel").acarousel();
+
+	// 初期位置の丸印をactiveにする
+	changeActive();
+
+	// カルーセルの各要素リンク
+	$("#carousel li a").click(function() {
+		if (acarousel.isAnim()) return false;	// アニメーション中は実行しない
+
+		var move = acarousel.moveByElem($(this).parent());
+		if (move == 0) {
+			alert("選択されている要素をクリックしました");
+		} else {
+			changeActive(move);
+		}
+		return false;
+	});
+
+	// 左矢印
+	$("#move_back").click(function () {
+		if (acarousel.isAnim()) return false;	// アニメーション中は実行しない
+
+		var move = acarousel.move(1);
+		changeActive(move);
+		return false;
+	});
+
+	// 右矢印
+	$("#move_next").click(function () {
+		if (acarousel.isAnim()) return false;	// アニメーション中は実行しない
+
+		var move = acarousel.move(-1);
+		changeActive(move);
+		return false;
+	});
+
+	// 丸印リンク
+	$(".move").click(function () {
+		if (acarousel.isAnim()) return false;	// アニメーション中は実行しない
+
+		var index = $(".move").index(this);
+		var move = acarousel.moveByIndex(index);
+		changeActive(move);
+		return false;
+	});
+
+	// 選択した丸印のclassを変更
+	function changeActive(move) {
+		var index = acarousel.getPos(move).index;
+		$(".move").removeClass("active").eq(index).addClass("active");
+	}
+
+	// 上下中央に表示
+	$(window).resize(function () {
+		var parent = $("#carousel_container");
+		var self = $("#carousel");
+		self.css({
+			left: parent.width() / 2 - self.width() / 2
+			, top: parent.height() / 2 - self.height() / 2
+		});
+	}).trigger("resize");
+
+});
+</script>
+</head>
+
+<body>
+<div id="header">
+	<div id="header_sub">
+		<div id="title" class="center">acarousel</div>
+		<div id="title_sub"></div>
+	</div>
+</div>
+
+<div id="content">
+	<div class="content_sub center">
+		<h3>基本</h3>
+		<div id="carousel_container">
+			<ul id="carousel">
+				<li id="c1"><a href="#"><img src="img1.jpg"></a></li>
+				<li id="c2"><a href="#"><img src="img2.jpg"></a></li>
+				<li id="c3"><a href="#"><img src="img3.jpg"></a></li>
+				<li id="c4"><a href="#"><img src="img4.jpg"></a></li>
+				<li id="c5"><a href="#"><img src="img5.jpg"></a></li>
+				<li id="c6"><a href="#"><img src="img6.jpg"></a></li>
+				<li id="c7"><a href="#"><img src="img7.jpg"></a></li>
+				<li id="c8"><a href="#"><img src="img8.jpg"></a></li>
+				<li id="c9"><a href="#"><img src="img9.jpg"></a></li>
+			</ul>
+		</div>
+		<div id="move_mark">
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<a class="move" href="#">●</a>
+			<div id="move_back"><a href="#">←</a></div>
+			<div id="move_next"><a href="#">→</a></div>
+		</div>
+
+		<div id="pad"></div>
+	</div>
+</div>
+</body>
+</html>

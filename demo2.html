@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width">
+<meta charset="utf-8">
+<title>acarousel - 動作例</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style2.css">
+<style>
+#carousel_container {
+	width: 95%;
+	max-width: 600px;
+	height: 300px;
+	border: 1px solid #a55;
+	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.5);
+}
+#carousel {
+	width: 600px;
+	height: 300px;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	list-style-type: none;
+}
+#carousel li {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #a55;
+	float: left;
+}
+#carousel li img {
+	width: 100%;
+	height: 100%;
+}
+
+#c1 {
+	width: 300px;
+	height: 250px;
+	left: 150px;
+	top: 25px;
+	z-index: 3;
+}
+#c2 {
+	width: 240px;
+	height: 200px;
+	left: 300px;
+	top: 50px;
+	z-index: 2;
+}
+#c3 {
+	width: 180px;
+	height: 150px;
+	left: 420px;
+	top: 75px;
+	z-index: 1;
+}
+#x1 {
+	width: 120px;
+	height: 100px;
+	left: 600px;
+	top: 100px;
+}
+#x2 {
+	width: 120px;
+	height: 100px;
+	left: -120px;
+	top: 100px;
+}
+#c4 {
+	width: 180px;
+	height: 150px;
+	left: 0px;
+	top: 75px;
+	z-index: 1;
+}
+#c5 {
+	width: 240px;
+	height: 200px;
+	left: 60px;
+	top: 50px;
+	z-index: 2;
+}
+
+.move img {
+	width: 50px;
+	height: 30px;
+	border: 3px solid #333;
+}
+.move.active img {
+	border: 3px solid #5a5;
+}
+
+#move_mark {
+	width: 95%;
+	max-width: 500px;
+	margin: 5px auto;
+	position: relative;
+	bottom: 0;
+}
+#move_mark a {
+	color: #666;
+	font-size: 20px;
+	font-weight: bold;
+	text-decoration: none;
+}
+#move_mark a.active, #move_mark a:hover {
+	color: #333;
+}
+#move_back {
+	margin: 0 10px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+#move_next {
+	margin: 0 10px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="jquery.acarousel.min.js"></script>
+<script>
+$(function () {
+	var len = $("#carousel").children().length;
+	var acarousel = $("#carousel").acarousel({
+		moveStep: function (elem, index, pos_index, t) {
+			// acarousel標準で対応できない部分の処理として
+			if (pos_index >= 3 && pos_index < len - 3 || pos_index == len - 3 && t == 0) {
+				elem.hide();
+			}
+		}
+	});
+
+	// 初期位置の丸印をactiveにする
+	changeActive();
+
+	// カルーセルの各要素リンク
+	$("#carousel li a").click(function() {
+		var move = acarousel.moveByElem($(this).parent());
+		changeActive(move);
+		return false;
+	});
+
+	// 左矢印
+	$("#move_back").click(function () {
+		var move = acarousel.move(1);
+		changeActive(move);
+		return false;
+	});
+
+	// 右矢印
+	$("#move_next").click(function () {
+		var move = acarousel.move(-1);
+		changeActive(move);
+		return false;
+	});
+
+	// サムネイルリンク
+	$(".move").click(function () {
+		// 要素数は5つに見せかけるため、自然な動きをするように計算してからアニメーションさせる
+
+		var pos = acarousel.getPos();
+		pos = pos.index % 5 + pos.point;
+		pos = parseInt($(".move").index(this)) - pos;
+
+		var diff1 = Math.abs(pos) % 5 * (pos < 0 ? 1 : -1);
+		var diff2 = (10 - (Math.abs(pos) + 5)) % 5 * (pos < 0 ? -1 : 1);
+
+		move = acarousel.move(Math.abs(diff1) < Math.abs(diff2) ? diff1 : diff2);
+		changeActive(move);
+		return false;
+	});
+
+	// 選択したサムネイルのclassを変更
+	function changeActive(move) {
+		var index = acarousel.getPos(move).index % 5;	// 要素数は5つに見せかけるため
+		$(".move").removeClass("active").eq(index).addClass("active");
+	}
+
+	// 上下中央に表示
+	$(window).resize(function () {
+		var parent = $("#carousel_container");
+		var self = $("#carousel");
+		self.css({
+			left: parent.width() / 2 - self.width() / 2
+			, top: parent.height() / 2 - self.height() / 2
+		});
+	}).trigger("resize");
+
+});
+</script>
+</head>
+
+<body>
+<div id="header">
+	<div id="header_sub">
+		<div id="title" class="center">acarousel</div>
+		<div id="title_sub"></div>
+	</div>
+</div>
+
+<div id="content">
+	<div class="content_sub center">
+		<h3>応用例</h3>
+		<div id="carousel_container">
+			<ul id="carousel">
+				<!--
+				表示上5つでも、アニメーションの動作を踏まえると最低7つ必要となる
+				要素が6つ以下の場合はコピーして以下のように7つ以上にする
+				-->
+				<li id="c1"><a href="#"><img src="img1.jpg"></a></li>
+				<li id="c2"><a href="#"><img src="img2.jpg"></a></li>
+				<li id="c3"><a href="#"><img src="img3.jpg"></a></li>
+				<li id="x1"><a href="#"><img src="img4.jpg"></a></li>
+				<li id="x1"><a href="#"><img src="img5.jpg"></a></li>
+				<li id="x1"><a href="#"><img src="img1.jpg"></a></li>
+				<li id="x1"><a href="#"><img src="img2.jpg"></a></li>
+				<li id="x2"><a href="#"><img src="img3.jpg"></a></li>
+				<li id="c4"><a href="#"><img src="img4.jpg"></a></li>
+				<li id="c5"><a href="#"><img src="img5.jpg"></a></li>
+			</ul>
+		</div>
+		<div id="move_mark">
+			<a class="move" href="#"><img src="img1.jpg"></a>
+			<a class="move" href="#"><img src="img2.jpg"></a>
+			<a class="move" href="#"><img src="img3.jpg"></a>
+			<a class="move" href="#"><img src="img4.jpg"></a>
+			<a class="move" href="#"><img src="img5.jpg"></a>
+			<div id="move_back"><a href="#">←</a></div>
+			<div id="move_next"><a href="#">→</a></div>
+		</div>
+
+		<div id="pad"></div>
+	</div>
+</div>
+</body>
+</html>
